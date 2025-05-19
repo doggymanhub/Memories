@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## 技術スタック
 - 言語: C#
-- UIフレームワーク: ModernWPF (WPF/.NET 6 以上)
+- UIフレームワーク: ModernWPF (WPF/.NET 8)
 
 ## コーディング規約
 - クラス名、メソッド名はパスカルケース（例: ProjectRule）
