@@ -1,0 +1,80 @@
+<ui:Window x:Class="memory.Views.AddPersonDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:memory.Views"
+    xmlns:viewModels="clr-namespace:memory.ViewModels"
+    mc:Ignorable="d"
+    Title="新しい人物"
+    Width="500" Height="650"
+    WindowStartupLocation="CenterOwner"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    ResizeMode="CanResizeWithGrip">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="名前:"/>
+                <TextBox Text="{Binding Person.Name, UpdateSourceTrigger=PropertyChanged}" ui:ControlHelper.PlaceholderText="必須" Margin="0,0,0,10"/>
+
+                <TextBlock Text="誕生日:" Margin="0,5,0,0"/>
+                <DatePicker SelectedDate="{Binding Person.Birthday, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+                <TextBlock Text="説明・メモ:" Margin="0,5,0,0"/>
+                <TextBox Text="{Binding Person.Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="80" MaxHeight="150" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+
+                <TextBlock Text="アイコン画像パス:" Margin="0,5,0,0"/>
+                <DockPanel Margin="0,0,0,10">
+                    <Button DockPanel.Dock="Right" Content="参照..." Command="{Binding SelectImageCommand}" Margin="5,0,0,0"/>
+                    <TextBox Text="{Binding Person.ImagePath, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+
+                <CheckBox IsChecked="{Binding Person.IsFavorite}" Content="お気に入り" Margin="0,5,0,10"/>
+
+                <TextBlock Text="SNSリンク:" Margin="0,5,0,0"/>
+                <DockPanel Margin="0,0,0,5">
+                     <Button DockPanel.Dock="Right" Command="{Binding RemoveSnsLinkCommand}" CommandParameter="{Binding ElementName=SnsLinksListView, Path=SelectedItem}" Margin="5,0,0,0">
+                        <ui:FontIcon Glyph="&#xE74D;"/>
+                    </Button>
+                    <Button DockPanel.Dock="Right" Command="{Binding AddSnsLinkCommand}" Margin="5,0,0,0">
+                        <ui:FontIcon Glyph="&#xE710;"/>
+                    </Button>
+                    <TextBox Text="{Binding NewSnsLink, UpdateSourceTrigger=PropertyChanged}" ui:ControlHelper.PlaceholderText="URLを入力して追加" VerticalAlignment="Center"/>
+                </DockPanel>
+                <ListView x:Name="SnsLinksListView" ItemsSource="{Binding Person.SnsLinks, Mode=OneWay}" MaxHeight="100" Margin="0,0,0,10">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Url}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <TextBlock Text="カテゴリ:" Margin="0,5,0,0"/>
+                <ListView ItemsSource="{Binding AvailableCategories}" SelectionMode="Multiple" MaxHeight="150" Margin="0,0,0,10">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelectedInDialog}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Category.Name}" IsChecked="{Binding IsSelectedInDialog, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="OK" Command="{Binding OkCommand}" IsDefault="True" Margin="0,0,10,0" MinWidth="75"/>
+            <Button Content="キャンセル" Command="{Binding CancelCommand}" IsCancel="True" MinWidth="75"/>
+        </StackPanel>
+    </Grid>
+</ui:Window> 

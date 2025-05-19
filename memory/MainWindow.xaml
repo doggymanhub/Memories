@@ -1,0 +1,47 @@
+﻿<ui:Window x:Class="memory.MainWindow"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:local="clr-namespace:memory"
+           xmlns:vm="clr-namespace:memory.ViewModels" 
+           xmlns:ui="http://schemas.modernwpf.com/2019"
+           mc:Ignorable="d"
+           Title="{Binding WindowTitle}" Height="720" Width="1280"
+           ui:WindowHelper.UseModernWindowStyle="True">
+
+    <!-- DataContextはコードビハインドで設定 -->
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="350"/> 
+            <ColumnDefinition Width="*"/> 
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{DynamicResource SystemControlPageBackgroundChromeLowBrush}" BorderThickness="0,0,1,0" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}">
+            <StackPanel>
+                <TextBlock Text="ナビゲーション (仮)" Margin="10" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                
+                <!-- ModernWPF NavigationView のサンプル (後でコマンドと連携) -->
+                <ui:NavigationView IsSettingsVisible="True" 
+                                   IsBackButtonVisible="Collapsed" 
+                                   PaneDisplayMode="LeftCompact" 
+                                   Header="メインメニュー"
+                                   ItemInvoked="NavigationView_ItemInvoked">
+                    <ui:NavigationView.MenuItems>
+                        <ui:NavigationViewItem Content="ダッシュボード" Icon="{ui:SymbolIconSource Symbol=Home}" Tag="Dashboard" />
+                        <ui:NavigationViewItem Content="グループ・人物管理" Icon="{ui:SymbolIconSource Symbol=People}" Tag="Explorer" />
+                        <ui:NavigationViewItem Content="カテゴリ管理" Icon="{ui:SymbolIconSource Symbol=Tag}" Tag="Categories" />
+                    </ui:NavigationView.MenuItems>
+                    <ui:NavigationView.FooterMenuItems>
+                        <ui:NavigationViewItem Content="設定" Icon="{ui:SymbolIconSource Symbol=Setting}" Tag="Settings" />
+                    </ui:NavigationView.FooterMenuItems>
+                    <!-- NavigationView.Content は ContentControl で表示するためここでは設定しない -->
+                </ui:NavigationView>
+            </StackPanel>
+        </Border>
+
+        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}" Margin="10"/>
+
+    </Grid>
+</ui:Window>

@@ -1,0 +1,44 @@
+<ui:Window x:Class="memory.Views.AddMemoryDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    Title="思い出の追加/編集"
+    Width="500" Height="550"
+    WindowStartupLocation="CenterOwner"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    ResizeMode="CanResizeWithGrip">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="日付:"/>
+                <DatePicker SelectedDate="{Binding MemoryItem.Date, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+                <TextBlock Text="タイトル:" Margin="0,5,0,0"/>
+                <TextBox Text="{Binding MemoryItem.Title, UpdateSourceTrigger=PropertyChanged}" ui:ControlHelper.PlaceholderText="必須" Margin="0,0,0,10"/>
+
+                <TextBlock Text="内容:" Margin="0,5,0,0"/>
+                <TextBox Text="{Binding MemoryItem.Content, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="150" MaxHeight="300" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+
+                <TextBlock Text="画像パス:" Margin="0,5,0,0"/>
+                <DockPanel Margin="0,0,0,10">
+                    <Button DockPanel.Dock="Right" Content="参照..." Command="{Binding SelectImageCommand}" Margin="5,0,0,0"/>
+                    <TextBox Text="{Binding MemoryItem.ImagePath, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+                 <!-- TODO: 紐づく人物の表示 (編集不可) -->
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="OK" Command="{Binding OkCommand}" IsDefault="True" Margin="0,0,10,0" MinWidth="75"/>
+            <Button Content="キャンセル" Command="{Binding CancelCommand}" IsCancel="True" MinWidth="75"/>
+        </StackPanel>
+    </Grid>
+</ui:Window> 

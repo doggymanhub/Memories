@@ -1,0 +1,126 @@
+<UserControl x:Class="memory.Views.GroupPersonExplorerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:memory.Views"
+             xmlns:viewModels="clr-namespace:memory.ViewModels"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:helpers="clr-namespace:memory.Helpers"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance viewModels:GroupPersonExplorerViewModel, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <helpers:NullToFalseConverter x:Key="NullToFalseConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- グループツリー -->
+        <Border Grid.Column="0" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                    <Button Command="{Binding AddGroupCommand}" Margin="0,0,5,0">
+                        <ui:FontIcon Glyph="&#xE710;"/>
+                        <!-- <TextBlock Text="グループ追加" Margin="5,0,0,0"/> -->
+                    </Button>
+                    <!-- TODO: 他のツールバーボタン (編集、削除など) -->
+                </StackPanel>
+                <ui:TreeView ItemsSource="{Binding Groups}" SelectedItem_="{Binding SelectedGroup, Mode=TwoWay}">
+                    <ui:TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding ChildGroups}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </HierarchicalDataTemplate>
+                    </ui:TreeView.ItemTemplate>
+                    <ui:TreeView.Resources>
+                        <Style TargetType="ui:TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                        </Style>
+                    </ui:TreeView.Resources>
+                    <ui:TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="新しいグループ" Command="{Binding DataContext.AddGroupCommand, RelativeSource={RelativeSource AncestorType=ui:TreeView}}"/>
+                            <MenuItem Header="グループ名を編集" Command="{Binding DataContext.EditGroupCommand, RelativeSource={RelativeSource AncestorType=ui:TreeView}}" CommandParameter="{Binding}"/>
+                            <Separator/>
+                            <MenuItem Header="グループを削除" Command="{Binding DataContext.DeleteGroupCommand, RelativeSource={RelativeSource AncestorType=ui:TreeView}}" CommandParameter="{Binding}"/>
+                        </ContextMenu>
+                    </ui:TreeView.ContextMenu>
+                </ui:TreeView>
+            </DockPanel>
+        </Border>
+
+        <!-- 右側エリア: 人物一覧と思い出一覧 -->
+        <Grid Grid.Column="1" Margin="10,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="150"/> <!-- 人物一覧エリア -->
+                <RowDefinition Height="Auto"/> <!-- GridSplitter -->
+                <RowDefinition Height="*" MinHeight="150"/> <!-- 思い出一覧エリア -->
+            </Grid.RowDefinitions>
+
+            <!-- 人物一覧 -->
+            <DockPanel Grid.Row="0">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                    <TextBlock Text="人物" VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,10,0"/>
+                    <Button Command="{Binding AddPersonCommand}" Margin="0,0,5,0" IsEnabled="{Binding SelectedGroup, Converter={StaticResource NullToFalseConverter}}">
+                        <ui:FontIcon Glyph="&#xE710;"/>
+                    </Button>
+                    <!-- TODO: 人物編集・削除ボタンはコンテキストメニューにあるのでツールバーからは削除検討 -->
+                </StackPanel>
+                <ListView ItemsSource="{Binding PersonsInSelectedGroup}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="名前" DisplayMemberBinding="{Binding Name}" Width="Auto"/>
+                            <GridViewColumn Header="誕生日" DisplayMemberBinding="{Binding Birthday, StringFormat='yyyy/MM/dd'}" Width="Auto"/>
+                        </GridView>
+                    </ListView.View>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="新しい人物を追加" Command="{Binding AddPersonCommand}" IsEnabled="{Binding DataContext.SelectedGroup, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                            <Separator/>
+                            <MenuItem Header="選択した人物を編集" Command="{Binding EditPersonCommand}" IsEnabled="{Binding DataContext.SelectedPerson, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                            <MenuItem Header="選択した人物を削除" Command="{Binding DeletePersonCommand}" IsEnabled="{Binding DataContext.SelectedPerson, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                </ListView>
+            </DockPanel>
+
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+
+            <!-- 思い出一覧 -->
+            <DockPanel Grid.Row="2">
+                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                    <TextBlock Text="思い出" VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,10,0"/>
+                    <Button Command="{Binding AddMemoryCommand}" Margin="0,0,5,0" IsEnabled="{Binding SelectedPerson, Converter={StaticResource NullToFalseConverter}}">
+                        <ui:FontIcon Glyph="&#xE710;"/>
+                    </Button>
+                    <Button Command="{Binding EditMemoryCommand}" Margin="0,0,5,0" IsEnabled="{Binding SelectedMemory, Converter={StaticResource NullToFalseConverter}}">
+                        <ui:SymbolIcon Symbol="Edit"/>
+                    </Button>
+                    <Button Command="{Binding DeleteMemoryCommand}" IsEnabled="{Binding SelectedMemory, Converter={StaticResource NullToFalseConverter}}">
+                        <ui:SymbolIcon Symbol="Delete"/>
+                    </Button>
+                </StackPanel>
+                <ListView ItemsSource="{Binding MemoriesOfSelectedPerson}" SelectedItem="{Binding SelectedMemory, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
+                     <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="日付" DisplayMemberBinding="{Binding Date, StringFormat='yyyy/MM/dd'}" Width="120"/>
+                            <GridViewColumn Header="タイトル" DisplayMemberBinding="{Binding Title}" Width="*"/>
+                        </GridView>
+                    </ListView.View>
+                     <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="新しい思い出を追加" Command="{Binding AddMemoryCommand}" IsEnabled="{Binding DataContext.SelectedPerson, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                            <Separator/>
+                            <MenuItem Header="選択した思い出を編集" Command="{Binding EditMemoryCommand}" IsEnabled="{Binding DataContext.SelectedMemory, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                            <MenuItem Header="選択した思い出を削除" Command="{Binding DeleteMemoryCommand}" IsEnabled="{Binding DataContext.SelectedMemory, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NullToFalseConverter}}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                </ListView>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl> 
